@@ -1,0 +1,67 @@
+#include <stdio.h>
+
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+int main() {
+    int n, i, j;
+    float avg_waiting = 0, avg_turnaround = 0;
+    
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    
+    int process[n], burst_time[n], waiting_time[n], turnaround_time[n];
+    
+    // Input and initialize process numbers
+    printf("Enter burst time for each process:\n");
+    for(i = 0; i < n; i++) {
+        printf("P%d: ", i+1);
+        scanf("%d", &burst_time[i]);
+        process[i] = i + 1;
+    }
+    
+    // Sort processes based on burst time (Selection Sort)
+    for(i = 0; i < n-1; i++) {
+        for(j = i+1; j < n; j++) {
+            if(burst_time[i] > burst_time[j]) {
+                swap(&burst_time[i], &burst_time[j]);
+                swap(&process[i], &process[j]);
+            }
+        }
+    }
+    
+    // Calculate waiting time
+    waiting_time[0] = 0;  // First process has 0 waiting time
+    for(i = 1; i < n; i++) {
+        waiting_time[i] = waiting_time[i-1] + burst_time[i-1];
+    }
+    
+    // Calculate turnaround time and averages
+    for(i = 0; i < n; i++) {
+        turnaround_time[i] = waiting_time[i] + burst_time[i];
+        avg_waiting += waiting_time[i];
+        avg_turnaround += turnaround_time[i];
+    }
+    
+    avg_waiting /= n;
+    avg_turnaround /= n;
+    
+    // Display results with proper alignment
+    printf("\n+----------+-------------+--------------+------------------+\n");
+    printf("| Process  | Burst Time  | Waiting Time | Turnaround Time |\n");
+    printf("+----------+-------------+--------------+------------------+\n");
+    
+    for(i = 0; i < n; i++) {
+        printf("| P%-7d | %-11d | %-12d | %-16d |\n", 
+               process[i], burst_time[i], waiting_time[i], turnaround_time[i]);
+    }
+    
+    printf("+----------+-------------+--------------+------------------+\n");
+    printf("\nAverage Waiting Time    : %.2f", avg_waiting);
+    printf("\nAverage Turnaround Time : %.2f\n", avg_turnaround);
+    
+    return 0;
+}

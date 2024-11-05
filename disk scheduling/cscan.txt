@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void bubbleSort(int arr[], int n) {
+    for(int i = 0; i < n-1; i++) {
+        for(int j = 0; j < n-i-1; j++) {
+            if(arr[j] > arr[j+1]) {
+                int temp = arr[j];
+                arr[j] = arr[j+1];
+                arr[j+1] = temp;
+            }
+        }
+    }
+}
+
+int main() {
+    int queue[100], n, head, seek = 0, max;
+    int queue1[50], queue2[50];  // Arrays for values greater and lesser than head
+    int temp1 = 0, temp2 = 0;    // Counters for queue1 and queue2
+    float avg;
+
+    // Input validation for disk range
+    do {
+        printf("Enter the max range of disk (1-999): ");
+        scanf("%d", &max);
+    } while(max <= 0 || max > 999);
+
+    // Input validation for initial head position
+    do {
+        printf("Enter the initial head position (0-%d): ", max-1);
+        scanf("%d", &head);
+    } while(head < 0 || head >= max);
+
+    // Input validation for queue size
+    do {
+        printf("Enter the size of queue request (1-99): ");
+        scanf("%d", &n);
+    } while(n <= 0 || n > 99);
+
+    // Input and separate requests into two queues
+    printf("Enter the queue of disk positions to be read:\n");
+    for(int i = 0; i < n; i++) {
+        int temp;
+        do {
+            scanf("%d", &temp);
+            if(temp < 0 || temp >= max) {
+                printf("Invalid position. Enter a value between 0 and %d: ", max-1);
+            }
+        } while(temp < 0 || temp >= max);
+
+        if(temp >= head) {
+            queue1[temp1++] = temp;
+        } else {
+            queue2[temp2++] = temp;
+        }
+    }
+
+    // Sort both queues
+    bubbleSort(queue1, temp1);
+    bubbleSort(queue2, temp2);
+
+    // Combine the sequences
+    int index = 0;
+    queue[index++] = head;
+
+    // Add requests greater than head
+    for(int i = 0; i < temp1; i++) {
+        queue[index++] = queue1[i];
+    }
+
+    // Add max value and 0
+    queue[index++] = max - 1;
+    queue[index++] = 0;
+
+    // Add requests less than head
+    for(int i = 0; i < temp2; i++) {
+        queue[index++] = queue2[i];
+    }
+
+    // Calculate total seek time and print movement
+    printf("\nSequence of head movement:\n");
+    for(int j = 0; j < index-1; j++) {
+        int diff = abs(queue[j+1] - queue[j]);
+        seek += diff;
+        printf("Disk head moves from %d to %d with seek %d\n", 
+               queue[j], queue[j+1], diff);
+    }
+
+    printf("\nTotal seek time: %d\n", seek);
+    avg = (float)seek / n;
+    printf("Average seek time: %.2f\n", avg);
+
+    return 0;
+}

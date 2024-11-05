@@ -1,0 +1,84 @@
+#include <stdio.h>
+
+struct Process {
+    int pid;
+    int burst_time;
+    int priority;
+    int waiting_time;
+    int turnaround_time;
+};
+
+// Function to sort processes by priority (higher priority number = higher priority)
+void sortByPriority(struct Process processes[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (processes[j].priority < processes[j + 1].priority) {
+                struct Process temp = processes[j];
+                processes[j] = processes[j + 1];
+                processes[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void calculateTimes(struct Process processes[], int n) {
+    // First process has 0 waiting time
+    processes[0].waiting_time = 0;
+    
+    // Calculate waiting time for each process
+    for (int i = 1; i < n; i++) {
+        processes[i].waiting_time = processes[i-1].waiting_time + processes[i-1].burst_time;
+    }
+    
+    // Calculate turnaround time for each process
+    for (int i = 0; i < n; i++) {
+        processes[i].turnaround_time = processes[i].waiting_time + processes[i].burst_time;
+    }
+}
+
+void displayResults(struct Process processes[], int n) {
+    float avg_waiting = 0, avg_turnaround = 0;
+    
+    printf("\nProcess\tPriority\tBurst Time\tWaiting Time\tTurnaround Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("P%d\t%d\t\t%d\t\t%d\t\t%d\n", 
+               processes[i].pid, 
+               processes[i].priority,
+               processes[i].burst_time, 
+               processes[i].waiting_time, 
+               processes[i].turnaround_time);
+        avg_waiting += processes[i].waiting_time;
+        avg_turnaround += processes[i].turnaround_time;
+    }
+    
+    printf("\nAverage Waiting Time: %.2f", avg_waiting/n);
+    printf("\nAverage Turnaround Time: %.2f\n", avg_turnaround/n);
+}
+
+int main() {
+    int n;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    
+    struct Process processes[n];
+    
+    // Input burst time and priority for each process
+    for (int i = 0; i < n; i++) {
+        processes[i].pid = i + 1;
+        printf("Enter burst time for Process %d: ", i + 1);
+        scanf("%d", &processes[i].burst_time);
+        printf("Enter priority for Process %d (higher number = higher priority): ", i + 1);
+        scanf("%d", &processes[i].priority);
+    }
+    
+    // Sort processes by priority
+    sortByPriority(processes, n);
+    
+    // Calculate waiting and turnaround times
+    calculateTimes(processes, n);
+    
+    // Display results
+    displayResults(processes, n);
+    
+    return 0;
+}

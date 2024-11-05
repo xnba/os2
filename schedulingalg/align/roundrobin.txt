@@ -1,0 +1,72 @@
+#include <stdio.h>
+
+int main() {
+    int n, quantum, i;
+    float avg_waiting = 0, avg_turnaround = 0;
+    
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    printf("Enter time quantum: ");
+    scanf("%d", &quantum);
+    
+    int burst_time[n], remaining_time[n], waiting_time[n];
+    int turnaround_time[n], completion_time[n];
+    
+    // Input burst time for each process
+    printf("\nEnter burst time for processes:\n");
+    for(i = 0; i < n; i++) {
+        printf("P%d: ", i+1);
+        scanf("%d", &burst_time[i]);
+        remaining_time[i] = burst_time[i];
+    }
+    
+    int time = 0, done = 0;
+    
+    // Process scheduling
+    while(done < n) {
+        for(i = 0; i < n; i++) {
+            if(remaining_time[i] > 0) {
+                if(remaining_time[i] > quantum) {
+                    time += quantum;
+                    remaining_time[i] -= quantum;
+                }
+                else {
+                    time += remaining_time[i];
+                    waiting_time[i] = time - burst_time[i];
+                    remaining_time[i] = 0;
+                    completion_time[i] = time;
+                    done++;
+                }
+            }
+        }
+    }
+    
+    // Calculate turnaround time and averages
+    for(i = 0; i < n; i++) {
+        turnaround_time[i] = completion_time[i];
+        avg_waiting += waiting_time[i];
+        avg_turnaround += turnaround_time[i];
+    }
+    
+    avg_waiting /= n;
+    avg_turnaround /= n;
+    
+    // Display results with proper alignment
+    printf("\n+--------+------------+--------------+------------------+");
+    printf("\n|Process | Burst Time | Waiting Time | Turnaround Time |");
+    printf("\n+--------+------------+--------------+------------------+");
+    
+    for(i = 0; i < n; i++) {
+        printf("\n|P%-6d | %-10d | %-12d | %-16d|", 
+               i+1, 
+               burst_time[i], 
+               waiting_time[i], 
+               turnaround_time[i]);
+    }
+    
+    printf("\n+--------+------------+--------------+------------------+");
+    printf("\n\nAverage Waiting Time    : %.2f", avg_waiting);
+    printf("\nAverage Turnaround Time : %.2f\n", avg_turnaround);
+    
+    return 0;
+}

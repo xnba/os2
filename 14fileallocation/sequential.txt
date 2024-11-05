@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void main() {
+    int files[50], blocks[100] = {0};
+    int n, start, len, i;
+    
+    srand(time(0));
+    printf("Enter number of files: ");
+    scanf("%d", &n);
+    
+    for(i = 0; i < n; i++) {
+        printf("Enter file %d length: ", i+1);
+        scanf("%d", &len);
+        start = rand() % 100;
+        
+        int count = 0, j;
+        while(count != len) {
+            count = 0;
+            start = rand() % 100;
+            for(j = start; j < start + len && j < 100; j++) {
+                if(blocks[j] == 0) count++;
+            }
+        }
+        
+        for(j = start; j < start + len; j++) {
+            blocks[j] = i + 1;
+        }
+        printf("File %d allocated from %d to %d\n", i+1, start, start+len-1);
+    }
+}

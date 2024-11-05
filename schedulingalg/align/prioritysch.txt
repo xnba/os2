@@ -1,0 +1,71 @@
+#include <stdio.h>
+
+int main() {
+    int n, i, j, temp;
+    float avg_waiting = 0, avg_turnaround = 0;
+    
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    
+    int burst_time[n], priority[n], process[n];
+    int waiting_time[n], turnaround_time[n];
+    
+    // Input burst time and priority for each process
+    printf("Enter burst time and priority for each process:\n");
+    for(i = 0; i < n; i++) {
+        printf("P%d Burst Time: ", i+1);
+        scanf("%d", &burst_time[i]);
+        printf("P%d Priority (lower number = higher priority): ", i+1);
+        scanf("%d", &priority[i]);
+        process[i] = i+1;
+    }
+    
+    // Sort processes based on priority using bubble sort
+    for(i = 0; i < n-1; i++) {
+        for(j = 0; j < n-i-1; j++) {
+            if(priority[j] > priority[j+1]) {
+                // Swap priorities
+                temp = priority[j];
+                priority[j] = priority[j+1];
+                priority[j+1] = temp;
+                
+                // Swap burst times
+                temp = burst_time[j];
+                burst_time[j] = burst_time[j+1];
+                burst_time[j+1] = temp;
+                
+                // Swap process numbers
+                temp = process[j];
+                process[j] = process[j+1];
+                process[j+1] = temp;
+            }
+        }
+    }
+    
+    // Calculate waiting time
+    waiting_time[0] = 0;
+    for(i = 1; i < n; i++) {
+        waiting_time[i] = waiting_time[i-1] + burst_time[i-1];
+    }
+    
+    // Calculate turnaround time and averages
+    for(i = 0; i < n; i++) {
+        turnaround_time[i] = waiting_time[i] + burst_time[i];
+        avg_waiting += waiting_time[i];
+        avg_turnaround += turnaround_time[i];
+    }
+    
+    avg_waiting /= n;
+    avg_turnaround /= n;
+    
+    // Display results
+    printf("\nProcess\tPriority\tBurst Time\tWaiting Time\tTurnaround Time\n");
+    for(i = 0; i < n; i++) {
+        printf("P%d\t%d\t\t%d\t\t%d\t\t%d\n", process[i], priority[i], 
+               burst_time[i], waiting_time[i], turnaround_time[i]);
+    }
+    printf("\nAverage Waiting Time: %.2f", avg_waiting);
+    printf("\nAverage Turnaround Time: %.2f\n", avg_turnaround);
+    
+    return 0;
+}

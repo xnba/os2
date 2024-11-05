@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+struct block {
+    int flag;
+    int fno;
+};
+
+void main() {
+    struct block b[100];
+    int r[50][50];
+    int n, len, i, j, q;
+    
+    srand(time(0));
+    
+    // Initialize blocks
+    for(i = 0; i < 100; i++) {
+        b[i].flag = 0;
+        b[i].fno = 0;
+    }
+    
+    // Get number of files
+    printf("Enter number of files: ");
+    scanf("%d", &n);
+    
+    // Allocate blocks for each file
+    for(i = 0; i < n; i++) {
+        printf("Enter length of file %d: ", i+1);
+        scanf("%d", &len);
+        
+        printf("Blocks allocated for file %d are: ", i+1);
+        for(j = 0; j < len; j++) {
+            do {
+                q = rand() % 100;
+            } while(b[q].flag != 0);
+            
+            b[q].flag = 1;
+            b[q].fno = i+1;
+            r[i][j] = q;
+            printf("%d ", q);
+        }
+        printf("\n");
+    }
+    
+    // Print allocation table
+    printf("\nFile Allocation Table:\n");
+    printf("File No.\tIndexed Blocks\n");
+    for(i = 0; i < n; i++) {
+        printf("%d\t\t", i+1);
+        for(j = 0; j < 50 && r[i][j] != 0; j++) {
+            printf("%d ", r[i][j]);
+        }
+        printf("\n");
+    }
+}
